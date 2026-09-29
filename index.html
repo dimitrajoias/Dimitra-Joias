@@ -1,0 +1,980 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dimitra Jóias - Elegância, Relógios & Gemas Preciosas</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Playfair Display for luxury title & Inter for clean text -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand': {
+                            50: '#FAF8F5',
+                            100: '#F5EFEC',
+                            200: '#E8DCD5',
+                            300: '#D9C2B5',
+                            400: '#C7A392',
+                            500: '#A37C6C', // Warm Rose Gold / Bronze
+                            600: '#8A6253',
+                            700: '#6E4B3E',
+                            800: '#52362C',
+                            900: '#2C1D17', // Onyx / Dark Gold Accent
+                        },
+                        'gold': {
+                            100: '#FFF9E6',
+                            300: '#F3E1A7',
+                            500: '#D4AF37',
+                            600: '#AA820A',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        cinzel: ['Cinzel', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .glass-header {
+            background: rgba(250, 248, 245, 0.92);
+            backdrop-filter: blur(12px);
+        }
+        .hero-banner {
+            background: linear-gradient(180deg, rgba(15, 12, 11, 0.45) 0%, rgba(15, 12, 11, 0.75) 100%), 
+                        url('https://images.unsplash.com/photo-1599643478524-fb66f70a9a16?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80') center/cover no-repeat fixed;
+        }
+        .product-card {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 30px -10px rgba(44, 29, 23, 0.12);
+        }
+        .product-card:hover .product-img {
+            transform: scale(1.08);
+        }
+        .product-img {
+            transition: transform 0.7s ease;
+        }
+        .tab-btn.active {
+            border-bottom: 2px solid #A37C6C;
+            color: #2C1D17;
+            font-weight: 600;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: grid;
+            animation: fadeIn 0.4s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Drawer transitions */
+        .drawer-overlay {
+            transition: opacity 0.3s ease;
+        }
+        .drawer-panel {
+            transition: transform 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-800 bg-brand-50 min-h-screen flex flex-col selection:bg-brand-200 selection:text-brand-900">
+
+    <!-- Navigation Bar -->
+    <header class="fixed w-full z-40 glass-header border-b border-brand-200/60 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            
+            <!-- Mobile Menu Toggle Button -->
+            <button class="lg:hidden text-brand-900 focus:outline-none p-2" onclick="toggleMobileMenu()" aria-label="Menu">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+
+            <!-- Brand Logo -->
+            <a href="#" class="flex flex-col items-center md:items-start tracking-widest text-center md:text-left">
+                <span class="font-cinzel text-2xl md:text-3xl font-bold text-brand-900 tracking-widest">DIMITRA</span>
+                <span class="font-serif text-xs md:text-sm text-brand-500 uppercase tracking-[0.3em] -mt-1">Jóias & Lapidação</span>
+            </a>
+
+            <!-- Desktop Navigation Links -->
+            <nav class="hidden lg:flex items-center space-x-10 text-xs tracking-[0.2em] font-medium uppercase text-gray-700">
+                <a href="#loja" class="hover:text-brand-500 transition-colors">Coleções</a>
+                <a href="#pedras-secao" class="hover:text-brand-500 transition-colors">Gemas & Lapidadas</a>
+                <a href="#relogios-secao" class="hover:text-brand-500 transition-colors">Alta Relojoaria</a>
+                <a href="#sobre" class="hover:text-brand-500 transition-colors">Ateliê</a>
+                <button onclick="openModal()" class="border border-brand-500 text-brand-700 px-5 py-2 rounded-none hover:bg-brand-500 hover:text-white transition-all duration-300 tracking-[0.2em]">
+                    Contato
+                </button>
+            </nav>
+
+            <!-- Utility Icons (Search & Shopping Cart) -->
+            <div class="flex items-center space-x-5 text-brand-900">
+                <button onclick="toggleSearch()" class="p-2 hover:text-brand-500 transition-colors" title="Buscar">
+                    <i class="fas fa-search text-lg"></i>
+                </button>
+                <button onclick="toggleCartDrawer()" class="p-2 hover:text-brand-500 transition-colors relative" title="Carrinho de Compras">
+                    <i class="fas fa-shopping-bag text-lg"></i>
+                    <span id="cart-badge" class="absolute top-0 right-0 bg-brand-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center translate-x-1 -translate-y-1">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Bar Dropdown -->
+        <div id="search-bar" class="hidden border-t border-brand-200 bg-white px-4 py-3 shadow-inner">
+            <div class="max-w-3xl mx-auto flex items-center space-x-3">
+                <i class="fas fa-search text-gray-400"></i>
+                <input type="text" id="search-input" onkeyup="filterProducts()" placeholder="Busque por diamante, esmeralda, relógio, anel, safira..." class="w-full focus:outline-none text-sm text-gray-800 bg-transparent py-1">
+                <button onclick="toggleSearch()" class="text-gray-400 hover:text-brand-900 text-sm">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Drawer -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-brand-50 border-t border-brand-200 py-6 px-6 shadow-xl">
+            <div class="flex flex-col space-y-4 text-center font-medium uppercase tracking-widest text-xs text-brand-900">
+                <a href="#loja" onclick="toggleMobileMenu()" class="py-2 hover:text-brand-500 border-b border-brand-200/50">Coleções</a>
+                <a href="#pedras-secao" onclick="toggleMobileMenu()" class="py-2 hover:text-brand-500 border-b border-brand-200/50">Gemas & Lapidadas</a>
+                <a href="#relogios-secao" onclick="toggleMobileMenu()" class="py-2 hover:text-brand-500 border-b border-brand-200/50">Alta Relojoaria</a>
+                <a href="#sobre" onclick="toggleMobileMenu()" class="py-2 hover:text-brand-500 border-b border-brand-200/50">Ateliê</a>
+                <button onclick="openModal(); toggleMobileMenu()" class="pt-2 text-brand-600 font-semibold tracking-widest">
+                    <i class="fas fa-envelope mr-2"></i> Fale Conosco
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner Section -->
+    <section class="hero-banner min-h-[85vh] md:min-h-screen flex items-center justify-center text-center px-4 pt-20">
+        <div class="max-w-4xl text-white py-16">
+            <span class="inline-block uppercase tracking-[0.4em] text-xs md:text-sm font-medium mb-4 text-brand-200 border-b border-brand-300/40 pb-2"> Alta Joalheria & Gemologia </span>
+            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-serif font-normal leading-tight mb-6 tracking-wide drop-shadow-md">
+                A Nobreza das Pedras & Raras Crições
+            </h1>
+            <p class="text-base sm:text-lg md:text-xl font-light mb-10 text-brand-100 max-w-2xl mx-auto leading-relaxed drop-shadow-sm">
+                A paixão pela lapidação perfeita. Explore nossa seleção especial de joias finas, relógios de alto luxo, semijoias e pedras preciosas brutas e lapidadas.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#loja" class="bg-white text-brand-900 hover:bg-brand-500 hover:text-white px-8 py-4 uppercase text-xs tracking-[0.25em] font-semibold transition-all duration-300 shadow-xl">
+                    Ver Coleções
+                </a>
+                <a href="#pedras-secao" class="border border-white/80 text-white hover:bg-white/10 px-8 py-4 uppercase text-xs tracking-[0.25em] font-medium transition-all duration-300 backdrop-blur-sm">
+                    Pedras & Lapidadas
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Banner -->
+    <section class="bg-brand-900 text-brand-100 py-6 border-y border-brand-800">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center text-xs tracking-wider uppercase font-light">
+            <div class="flex flex-col items-center justify-center p-2">
+                <i class="fas fa-gem text-gold-500 text-lg mb-2"></i>
+                <span>Gemas Certificadas</span>
+            </div>
+            <div class="flex flex-col items-center justify-center p-2">
+                <i class="fas fa-certificate text-gold-500 text-lg mb-2"></i>
+                <span>Lapidação de Alta Precisão</span>
+            </div>
+            <div class="flex flex-col items-center justify-center p-2">
+                <i class="fas fa-truck text-gold-500 text-lg mb-2"></i>
+                <span>Entrega Segura & Blindada</span>
+            </div>
+            <div class="flex flex-col items-center justify-center p-2">
+                <i class="fas fa-shield-alt text-gold-500 text-lg mb-2"></i>
+                <span>Atendimento Exclusivo</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Catalog & Store Section -->
+    <section id="loja" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <span class="text-xs uppercase tracking-[0.3em] text-brand-500 font-semibold block mb-2">Exclusividade em Cada Detalhe</span>
+                <h2 class="text-3xl sm:text-4xl font-serif text-brand-900">Catálogo de Peças</h2>
+                <div class="w-12 h-0.5 bg-brand-500 mx-auto mt-4 mb-8"></div>
+                
+                <!-- Category Tabs -->
+                <div class="flex flex-wrap justify-center gap-2 sm:gap-6 border-b border-gray-200 pb-2 max-w-4xl mx-auto">
+                    <button class="tab-btn active px-4 py-3 text-xs uppercase tracking-widest text-gray-500 hover:text-brand-900 transition-colors" onclick="openTab(event, 'joias')">
+                        Joias Finas
+                    </button>
+                    <button class="tab-btn px-4 py-3 text-xs uppercase tracking-widest text-gray-500 hover:text-brand-900 transition-colors" onclick="openTab(event, 'relogios')">
+                        Relógios
+                    </button>
+                    <button class="tab-btn px-4 py-3 text-xs uppercase tracking-widest text-gray-500 hover:text-brand-900 transition-colors" onclick="openTab(event, 'pedras')">
+                        Preciosas & Lapidadas
+                    </button>
+                    <button class="tab-btn px-4 py-3 text-xs uppercase tracking-widest text-gray-500 hover:text-brand-900 transition-colors" onclick="openTab(event, 'semijoias')">
+                        Semijoias Exclusivas
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab 1: Joias Finas -->
+            <div id="joias" class="tab-content active grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                
+                <!-- Item 1 -->
+                <div class="product-card bg-brand-50 p-4 border border-brand-100 flex flex-col justify-between" data-name="anel solitario diamante ouro branco">
+                    <div>
+                        <div class="overflow-hidden bg-white mb-4 relative h-72 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1602752250014-411a7bb7d5d1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Anel Solitário Diamante" class="product-img w-full h-full object-cover">
+                            <span class="absolute top-3 left-3 bg-brand-900 text-gold-300 text-[10px] uppercase font-semibold px-2 py-1 tracking-wider">Alta Joalheria</span>
+                        </div>
+                        <h3 class="font-serif text-lg text-brand-900 mb-1">Anel Solitário Diamante</h3>
+                        <p class="text-gray-500 text-xs mb-3">Ouro Branco 18k com Diamante Central Lapidação Brilhante 1.0ct.</p>
+                    </div>
+                    <div class="pt-2 border-t border-brand-200/50 flex items-center justify-between">
+                        <span class="font-serif text-brand-800 font-semibold text-base">R$ 14.800,00</span>
+                        <button onclick="addToCart('Anel Solitário Diamante', 14800, 'https://images.unsplash.com/photo-1602752250014-411a7bb7d5d1?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80')" class="bg-brand-900 text-white hover:bg-brand-500 text-xs uppercase tracking-wider px-3 py-2 transition-colors">
+                            <i class="fas fa-plus mr-1"></i> Comprar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="product-card bg-brand-50 p-4 border border-brand-100 flex flex-col justify-between" data-name="colar gota esmeralda ouro amarelo">
+                    <div>
+                        <div class="overflow-hidden bg-white mb-4 relative h-72 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1596944924616-7b38e7cfac36?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Colar Gota Esmeralda" class="product-img w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-serif text-lg text-brand-900 mb-1">Colar Gota Esmeralda</h3>
+                        <p class="text-gray-500 text-xs mb-3">Esmeralda Colombiana de 2.5ct envolvida em Ouro Amarelo 18k.</p>
+                    </div>
+                    <div class="pt-2 border-t border-brand-200/50 flex items-center justify-between">
+                        <span class="font-serif text-brand-800 font-semibold text-base">R$ 18.500,00</span>
+                        <button onclick="addToCart('Colar Gota Esmeralda', 18500, 'https://images.unsplash.com/photo-1596944924616-7b38e7cfac36?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80')" class="bg-brand-900 text-white hover:bg-brand-500 text-xs uppercase tracking-wider px-3 py-2 transition-colors">
+                            <i class="fas fa-plus mr-1"></i> Comprar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="product-card bg-brand-50 p-4 border border-brand-100 flex flex-col justify-between" data-name="par aliancas ouro noivado">
+                    <div>
+                        <div class="overflow-hidden bg-white mb-4 relative h-72 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1599643477877-530eb83abc8e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Alianças Ouro 18k" class="product-img w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-serif text-lg text-brand-900 mb-1">Par de Alianças Majestade</h3>
+                        <p class="text-gray-500 text-xs mb-3">Confeccionadas em Ouro 18k Anatômico polido de alto brilho.</p>
+                    </div>
+                    <div class="pt-2 border-t border-brand-200/50 flex items-center justify-between">
+                        <span class="font-serif text-brand-800 font-semibold text-base">R$ 5.900,00</span>
+                        <button onclick="addToCart('Par de Alianças Majestade', 5900, 'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80')" class="bg-brand-900 text-white hover:bg-brand-500 text-xs uppercase tracking-wider px-3 py-2 transition-colors">
+                            <i class="fas fa-plus mr-1"></i> Comprar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="product-card bg-brand-50 p-4 border border-brand-100 flex flex-col justify-between" data-name="brincos perola akoya ouro">
+                    <div>
+                        <div class="overflow-hidden bg-white mb-4 relative h-72 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Brincos Pérola" class="product-img w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-serif text-lg text-brand-900 mb-1">Brincos Pérola Akoya</h3>
+                        <p class="text-gray-500 text-xs mb-3">Pérolas naturais orientais selecionadas com pino em Ouro Amarelo.</p>
+                    </div>
+                    <div class="pt-2 border-t border-brand-200/50 flex items-center justify-between">
+                        <span class="font-serif text-brand-800 font-semibold text-base">R$ 3.850,00</span>
+                        <button onclick="addToCart('Brincos Pérola Akoya', 3850, 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80')" class="bg-brand-900 text-white hover:bg-brand-500 text-xs uppercase tracking-wider px-3 py-2 transition-colors">
+                            <i class="fas fa-plus mr-1"></i> Comprar
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Tab 2: Relógios -->
+            <div id="relogios" class="tab-content grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                
+                <!-- Relógio 1 -->
+                <div class="product-card bg-brand-50 p-4 border border-brand-100 flex flex-col justify-between" data-name="relogio chronos vintage automatico">
+                    <div>
+                        <div class="overflow-hidden bg-white mb-4 relative h-72 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1524592094714-0f0654e20314?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Relógio Chronos Vintage" class="product-img w-full h-full object-cover">
+                            <span class="absolute top-3 left-3 bg-brand-900 text-gold-300 text-[10px] uppercase font-semibold px-2 py-1 tracking-wider">Suíço Automático</span>
+                        </div>
+                        <h3 class="font-serif text-lg text-brand-900 mb-1">Chronos Heritage Rose</h3>
+                        <p class="text-gray-500 text-xs mb-3">Caixa em Ouro Rosé 18k, pulseira em couro Jacaré legítimo.</p>
+                    </div>
+                    <div class="pt-2 border-t border-brand-200/50 flex items-center justify-between">
+                        <span class="font-serif text-brand-800 font-semibold text-base">R$ 26.400,00</span>
+                        <button onclick="addToCart('Chronos Heritage Rose', 26400, 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80')" class="bg-brand-900 text-white hover:bg-brand-500 text-xs uppercase tracking-wider px-3 py-2 transition-colors">
+                            <i class="fas fa-plus mr-1"></i> Comprar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Relógio 2 -->
+                <div class="product-card bg-brand-50 p-4 border border-brand-100 flex flex-col justify-between" data-name="relogio aviator aco cronografo">
+                    <div>
+                        <div class="overflow-hidden bg-white mb-4 relative h-72 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Relógio Aviator" class="product-img w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-serif text-lg text-brand-900 mb-1">Aviator Chronograph</h3>
+                        <p class="text-gray-500 text-xs mb-3">Aço inoxidável cirúrgico, vidro em cristal de safira anti-riscos.</p>
+                    </div>
+                    <div class="pt-2 border-t border-brand-200/50 flex items-center justify-between">
+                        <span class="font-serif text-brand-800 font-semibold text-base">R$ 19.800,00</span>
+                        <button onclick="addToCart('Aviator Chronograph', 19800, 'https://images.unsplash.com/photo-1547996160-81dfa63595aa?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80')" class="bg-brand-900 text-white hover:bg-brand-500 text-xs uppercase tracking-wider px-3 py-2 transition-colors">
+                            <i class="fas fa-plus mr-1"></i> Comprar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Relógio 3 -->
+                <div class="product-card bg-brand-50 p-4 border border-brand-100 flex flex-col justify-between" data-name="relogio elegance madreperola diamantes">
+                    <div>
+                        <div class="overflow-hidden bg-white mb-4 relative h-72 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Relógio Elegance" class="product-img w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-serif text-lg text-brand-900 mb-1">Elegance Madrepérola</h3>
+                        <p class="text-gray-500 text-xs mb-3">Mostrador em Madrepérola natural com marcadores de Diamante.</p>
+                    </div>
+                    <div class="pt-2 border-t border-brand-200/50 flex items-center justify-between">
+                        <span class="font-serif text-brand-800 font-semibold text-base">R$ 21.900,00</span>
+                        <button onclick="addToCart('Elegance Madrepérola', 21900, 'https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80')" class="bg-brand-900 text-white hover:bg-brand-500 text-xs uppercase tracking-wider px-3 py-2 transition-colors">
+                            <i class="fas fa-plus mr-1"></i> Comprar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Relógio 4 -->
+                <div class="product-card bg-brand-50 p-4 border border-brand-100 flex flex-col justify-between" data-name="relogio ceramica preta minimal noir">
+                    <div>
+                        <div class="overflow-hidden bg-white mb-4 relative h-72 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1622434641406-a158123450f9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Relógio Cerâmica" class="product-img w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-serif text-lg text-brand-900 mb-1">Minimal Noir Ceramic</h3>
+                        <p class="text-gray-500 text-xs mb-3">Estrutura ultraleve em cerâmica de alta resistência e movimento Quartz.</p>
+                    </div>
+                    <div class="pt-2 border-t border-brand-200/50 flex items-center justify-between">
+                        <span class="font-serif text-brand-800 font-semibold text-base">R$ 8.900,00</span>
+                        <button onclick="addToCart('Minimal Noir Ceramic', 8900, 'https://images.unsplash.com/photo-1622434641406-a158123450f9?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80')" class="bg-brand-900 text-white hover:bg-brand-500 text-xs uppercase tracking-wider px-3 py-2 transition-colors">
+                            <i class="fas fa-plus mr-1"></i> Comprar
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Tab 3: Pedras Preciosas, Semipreciosas e Lapidadas -->
+            <div id="pedras" class="tab-content grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                
+                <!-- Pedra 1 -->
+                <div class="product-card bg-brand-50 p-4 border border-brand-100 flex flex-col justify-between" data-name="diamante brilhante lapidado g gemas">
+                    <div>
+                        <div class="overflow-hidden bg-white mb-4 relative h-72 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1573408301145-b98c4654408c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Diamante Lapidado" class="product-img w-full h-full object-cover">
+                            <span class="absolute top-3 left-3 bg-brand-900 text-gold-300 text-[10px] uppercase font-semibold px-2 py-1 tracking-wider">Certificado GIA</span>
+                        </div>
+                        <h3 class="font-serif text-lg text-brand-900 mb-1">Diamante Lapidação Brilhante</h3>
+                        <p class="text-gray-500 text-xs mb-3">1.50ct, Cor D, Pureza VVS1. Lapidação de precisão artesanal.</p>
+                    </div>
+                    <div class="pt-2 border-t border-brand-200/50 flex items-center justify-between">
+                        <span class="font-serif text-brand-800 font-semibold text-base">R$ 42.000,00</span>
+                        <button onclick="addToCart('Diamante Lapidação Brilhante', 42000, 'https://images.unsplash.com/photo-1573408301145-b98c4654408c?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80')" class="bg-brand-900 text-white hover:bg-brand-500 text-xs uppercase tracking-wider px-3 py-2 transition-colors">
+                            <i class="fas fa-plus mr-1"></i> Comprar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pedra 2 -->
+                <div class="product-card bg-brand-50 p-4 border border-brand-100 flex flex-col justify-between" data-name="safira azul ceylon pedra preciosa lapidada">
+                    <div>
+                        <div class="overflow-hidden bg-white mb-4 relative h-72 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1588661642103-605a183d2bf2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Safira Azul" class="product-img w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-serif text-lg text-brand-900 mb-1">Safira Azul Ceylon Lapidada</h3>
+                        <p class="text-gray-500 text-xs mb-3">2.20ct, tom azul royal intenso, lapidação formato Oval clássico.</p>
+                    </div>
+                    <div class="pt-2 border-t border-brand-200/50 flex items-center justify-between">
+                        <span class="font-serif text-brand-800 font-semibold text-base">R$ 29.500,00</span>
+                        <button onclick="addToCart('Safira Azul Ceylon Lapidada', 29500, 'https://images.unsplash.com/photo-1588661642103-605a183d2bf2?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80')" class="bg-brand-900 text-white hover:bg-brand-500 text-xs uppercase tracking-wider px-3 py-2 transition-colors">
+                            <i class="fas fa-plus mr-1"></i> Comprar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pedra 3 -->
+                <div class="product-card bg-brand-50 p-4 border border-brand-100 flex flex-col justify-between" data-name="rubi sangue de pombo pedra preciosa cushion">
+                    <div>
+                        <div class="overflow-hidden bg-white mb-4 relative h-72 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1615526685710-18dc0c3ce2fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Rubi Lapidado" class="product-img w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-serif text-lg text-brand-900 mb-1">Rubi 'Sangue de Pombo'</h3>
+                        <p class="text-gray-500 text-xs mb-3">1.85ct, tom vermelho sangue raro, lapidação Cushion facetada.</p>
+                    </div>
+                    <div class="pt-2 border-t border-brand-200/50 flex items-center justify-between">
+                        <span class="font-serif text-brand-800 font-semibold text-base">R$ 36.000,00</span>
+                        <button onclick="addToCart('Rubi Sangue de Pombo', 36000, 'https://images.unsplash.com/photo-1615526685710-18dc0c3ce2fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80')" class="bg-brand-900 text-white hover:bg-brand-500 text-xs uppercase tracking-wider px-3 py-2 transition-colors">
+                            <i class="fas fa-plus mr-1"></i> Comprar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pedra 4 -->
+                <div class="product-card bg-brand-50 p-4 border border-brand-100 flex flex-col justify-between" data-name="turmalina paraiba pedra semipreciosa raras">
+                    <div>
+                        <div class="overflow-hidden bg-white mb-4 relative h-72 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1590502593747-42a996133562?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Turmalina Paraíba" class="product-img w-full h-full object-cover">
+                            <span class="absolute top-3 left-3 bg-brand-900 text-gold-300 text-[10px] uppercase font-semibold px-2 py-1 tracking-wider">Raridade Nacional</span>
+                        </div>
+                        <h3 class="font-serif text-lg text-brand-900 mb-1">Turmalina Paraíba Lapidada</h3>
+                        <p class="text-gray-500 text-xs mb-3">1.10ct, brilho azul-neón elétrico inconfundível. Lapidação Pera.</p>
+                    </div>
+                    <div class="pt-2 border-t border-brand-200/50 flex items-center justify-between">
+                        <span class="font-serif text-brand-800 font-semibold text-base">R$ 38.900,00</span>
+                        <button onclick="addToCart('Turmalina Paraíba Lapidada', 38900, 'https://images.unsplash.com/photo-1590502593747-42a996133562?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80')" class="bg-brand-900 text-white hover:bg-brand-500 text-xs uppercase tracking-wider px-3 py-2 transition-colors">
+                            <i class="fas fa-plus mr-1"></i> Comprar
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Tab 4: Semijoias -->
+            <div id="semijoias" class="tab-content grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                
+                <!-- Semijoia 1 -->
+                <div class="product-card bg-brand-50 p-4 border border-brand-100 flex flex-col justify-between" data-name="conjunto gota zirconias banhado ouro semijoia">
+                    <div>
+                        <div class="overflow-hidden bg-white mb-4 relative h-72 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Conjunto Zircônia" class="product-img w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-serif text-lg text-brand-900 mb-1">Conjunto Gota Zircônia Premium</h3>
+                        <p class="text-gray-500 text-xs mb-3">Brincos e colar banhados em Ouro 18k com camadas antialérgicas.</p>
+                    </div>
+                    <div class="pt-2 border-t border-brand-200/50 flex items-center justify-between">
+                        <span class="font-serif text-brand-800 font-semibold text-base">R$ 490,00</span>
+                        <button onclick="addToCart('Conjunto Gota Zircônia Premium', 490, 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80')" class="bg-brand-900 text-white hover:bg-brand-500 text-xs uppercase tracking-wider px-3 py-2 transition-colors">
+                            <i class="fas fa-plus mr-1"></i> Comprar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Semijoia 2 -->
+                <div class="product-card bg-brand-50 p-4 border border-brand-100 flex flex-col justify-between" data-name="pulseira riviera rodio semijoia">
+                    <div>
+                        <div class="overflow-hidden bg-white mb-4 relative h-72 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1599643478514-4a414966e33e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Pulseira Riviera" class="product-img w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-serif text-lg text-brand-900 mb-1">Pulseira Riviera Fina Ródio</h3>
+                        <p class="text-gray-500 text-xs mb-3">Banhada em Ródio Branco com zircônias de alto brilho cravadas.</p>
+                    </div>
+                    <div class="pt-2 border-t border-brand-200/50 flex items-center justify-between">
+                        <span class="font-serif text-brand-800 font-semibold text-base">R$ 390,00</span>
+                        <button onclick="addToCart('Pulseira Riviera Fina Ródio', 390, 'https://images.unsplash.com/photo-1599643478514-4a414966e33e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80')" class="bg-brand-900 text-white hover:bg-brand-500 text-xs uppercase tracking-wider px-3 py-2 transition-colors">
+                            <i class="fas fa-plus mr-1"></i> Comprar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Semijoia 3 -->
+                <div class="product-card bg-brand-50 p-4 border border-brand-100 flex flex-col justify-between" data-name="argolas cravejadas ouro semijoia">
+                    <div>
+                        <div class="overflow-hidden bg-white mb-4 relative h-72 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1535632787350-4e68ef0ac584?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Argolas Cravejadas" class="product-img w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-serif text-lg text-brand-900 mb-1">Argolas Duplas Cravejadas</h3>
+                        <p class="text-gray-500 text-xs mb-3">Três banhos de Ouro 18k e microzircônias cristalinas lapidadas.</p>
+                    </div>
+                    <div class="pt-2 border-t border-brand-200/50 flex items-center justify-between">
+                        <span class="font-serif text-brand-800 font-semibold text-base">R$ 320,00</span>
+                        <button onclick="addToCart('Argolas Duplas Cravejadas', 320, 'https://images.unsplash.com/photo-1535632787350-4e68ef0ac584?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80')" class="bg-brand-900 text-white hover:bg-brand-500 text-xs uppercase tracking-wider px-3 py-2 transition-colors">
+                            <i class="fas fa-plus mr-1"></i> Comprar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Semijoia 4 -->
+                <div class="product-card bg-brand-50 p-4 border border-brand-100 flex flex-col justify-between" data-name="choker fita malha banhado ouro semijoia">
+                    <div>
+                        <div class="overflow-hidden bg-white mb-4 relative h-72 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1602751584552-8ba73aad10ee?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Choker Malha" class="product-img w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-serif text-lg text-brand-900 mb-1">Choker Malha Fita Flexível</h3>
+                        <p class="text-gray-500 text-xs mb-3">Design italiano minimalista banhado a Ouro Amarelo 18k.</p>
+                    </div>
+                    <div class="pt-2 border-t border-brand-200/50 flex items-center justify-between">
+                        <span class="font-serif text-brand-800 font-semibold text-base">R$ 280,00</span>
+                        <button onclick="addToCart('Choker Malha Fita Flexível', 280, 'https://images.unsplash.com/photo-1602751584552-8ba73aad10ee?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80')" class="bg-brand-900 text-white hover:bg-brand-500 text-xs uppercase tracking-wider px-3 py-2 transition-colors">
+                            <i class="fas fa-plus mr-1"></i> Comprar
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Section: Pedras Preciosas & Lapidação -->
+    <section id="pedras-secao" class="py-20 bg-brand-900 text-white relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="text-xs uppercase tracking-[0.3em] text-gold-500 font-medium block mb-3">Arte & Gemologia</span>
+                    <h2 class="text-3xl sm:text-5xl font-serif mb-6 leading-tight">Pedras Preciosas, Semipreciosas e Lapidadas</h2>
+                    <p class="text-brand-200 leading-relaxed font-light mb-8 text-sm sm:text-base">
+                        A Dimitra Jóias se destaca no mercado pela curadoria e pela lapidação de alta precisão de gemas do Brasil e do mundo. Cada faceta é trabalhada para extrair o máximo de brilho, reflexo e vivacidade de cor.
+                    </p>
+                    <div class="grid grid-cols-2 gap-6 mb-8 text-xs font-light">
+                        <div class="border-l-2 border-gold-500 pl-4">
+                            <h4 class="font-serif text-lg font-normal text-white mb-1">Gemas Preciosas</h4>
+                            <p class="text-brand-300">Diamantes, Rubis, Safiras e Esmeraldas com laudo internacional.</p>
+                        </div>
+                        <div class="border-l-2 border-gold-500 pl-4">
+                            <h4 class="font-serif text-lg font-normal text-white mb-1">Semipreciosas & Raras</h4>
+                            <p class="text-brand-300">Turmalinas, Água-marinha, Topázios, Ametistas e Garnets seletas.</p>
+                        </div>
+                    </div>
+                    <button onclick="openModal()" class="bg-gold-500 text-brand-900 hover:bg-white font-semibold uppercase text-xs tracking-[0.2em] px-8 py-4 transition-all duration-300">
+                        Encomendar Lapidação Sob Medida
+                    </button>
+                </div>
+                <div class="relative">
+                    <img src="https://images.unsplash.com/photo-1617038220319-276d3cfab638?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Oficina de Lapidação" class="shadow-2xl border-8 border-brand-800/80 w-full object-cover h-[450px]">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Section: Alta Relojoaria -->
+    <section id="relogios-secao" class="py-20 bg-brand-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="order-2 lg:order-1">
+                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Relógio de Luxo Detail" class="shadow-2xl w-full object-cover h-[420px]">
+                </div>
+                <div class="order-1 lg:order-2">
+                    <span class="text-xs uppercase tracking-[0.3em] text-brand-500 font-semibold block mb-3">Precisão do Tempo</span>
+                    <h2 class="text-3xl sm:text-4xl font-serif text-brand-900 mb-6">Alta Relojoaria Selecionada</h2>
+                    <p class="text-gray-600 leading-relaxed font-light mb-6 text-sm sm:text-base">
+                        Nossa galeria de relógios reúne máquinas automáticas e movimentos de precisão suíça, combinando designs atemporais em Ouro, Aço Cirúrgico e Cerâmica. Peças para colecionadores e momentos marcantes.
+                    </p>
+                    <ul class="space-y-3 text-xs sm:text-sm text-gray-700 mb-8">
+                        <li class="flex items-center"><i class="fas fa-check text-brand-500 mr-3"></i> Movimentos Automáticos e de Alta Complicação</li>
+                        <li class="flex items-center"><i class="fas fa-check text-brand-500 mr-3"></i> Garantia Internacional de 2 a 5 anos</li>
+                        <li class="flex items-center"><i class="fas fa-check text-brand-500 mr-3"></i> Vidros em Cristal de Safira Anti-reflexo</li>
+                    </ul>
+                    <a href="#loja" onclick="openTabByName('relogios')" class="inline-block border border-brand-900 text-brand-900 hover:bg-brand-900 hover:text-white px-8 py-3 uppercase text-xs tracking-widest font-medium transition-colors">
+                        Explorar Relógios
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About / Ateliê Section -->
+    <section id="sobre" class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <span class="text-xs uppercase tracking-[0.3em] text-brand-500 font-semibold block mb-2">Tradição & Amor às Pedras</span>
+            <h2 class="text-3xl sm:text-4xl font-serif text-brand-900 mb-6">O Ateliê Dimitra Jóias</h2>
+            <div class="w-12 h-0.5 bg-brand-500 mx-auto mb-8"></div>
+            <p class="text-gray-600 text-base sm:text-lg font-light leading-relaxed mb-10">
+                Fundada com a missão de eternizar sentimentos em forma de arte, a Dimitra Jóias alia a tradicional arte dos mestres ourives à curadoria apurada de gemas brutas e lapidadas. Atendemos aos clientes mais exigentes com ética, certificados de garantia e designs que atravessam gerações.
+            </p>
+            <div class="p-8 bg-brand-50 border border-brand-200 inline-block text-left max-w-md w-full">
+                <h4 class="font-serif text-lg text-brand-900 mb-2 font-semibold">Atendimento no Ateliê</h4>
+                <p class="text-xs text-gray-600 leading-relaxed mb-4">
+                    Atendemos com hora marcada para consultorias em gemologia, projetos sob medida e escolha de pedras preciosas.
+                </p>
+                <div class="text-xs text-brand-800 font-medium space-y-1">
+                    <p><i class="fas fa-map-marker-alt mr-2 text-brand-500"></i> Rua Pretória, 512 - Vila Formosa</p>
+                    <p><i class="fas fa-mail-bulk mr-2 text-brand-500"></i> CEP: 03416-000 - São Paulo, SP</p>
+                    <p><i class="fas fa-envelope mr-2 text-brand-500"></i> joiasdimitra@gmail.com</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="bg-brand-900 text-white pt-16 pb-12 mt-auto border-t border-brand-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+                
+                <!-- Col 1: Brand -->
+                <div>
+                    <h3 class="font-cinzel text-2xl font-bold tracking-widest text-white mb-2">DIMITRA</h3>
+                    <p class="text-xs uppercase tracking-[0.25em] text-gold-500 mb-4">Jóias & Lapidação</p>
+                    <p class="text-brand-300 text-xs leading-relaxed">
+                        Sua referência em alta joalheria, relógios finos, semijoias exclusivas e gemas preciosas e lapidadas com procedência garantida.
+                    </p>
+                </div>
+
+                <!-- Col 2: Navigation Links -->
+                <div>
+                    <h4 class="font-serif text-sm tracking-widest uppercase text-brand-200 mb-4 border-b border-brand-800 pb-2">Navegação</h4>
+                    <ul class="space-y-2 text-xs text-brand-300">
+                        <li><a href="#loja" class="hover:text-gold-300 transition-colors">Joias Finas</a></li>
+                        <li><a href="#relogios-secao" class="hover:text-gold-300 transition-colors">Relógios de Luxo</a></li>
+                        <li><a href="#pedras-secao" class="hover:text-gold-300 transition-colors">Pedras Lapidadas & Gemas</a></li>
+                        <li><a href="#loja" onclick="openTabByName('semijoias')" class="hover:text-gold-300 transition-colors">Semijoias Banhadas</a></li>
+                        <li><a href="#sobre" class="hover:text-gold-300 transition-colors">Nosso Ateliê</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Address & Direct Contact -->
+                <div>
+                    <h4 class="font-serif text-sm tracking-widest uppercase text-brand-200 mb-4 border-b border-brand-800 pb-2">Localização & Contato</h4>
+                    <ul class="space-y-3 text-xs text-brand-300">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-gold-500 mr-3 mt-0.5"></i>
+                            <span>Rua Pretória, 512 - Vila Formosa<br>CEP: 03416-000 - São Paulo, SP</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-gold-500 mr-3"></i>
+                            <a href="mailto:joiasdimitra@gmail.com" class="hover:text-gold-300 underline">joiasdimitra@gmail.com</a>
+                        </li>
+                        <li class="flex items-center text-brand-400 text-[11px] pt-1">
+                            <i class="fas fa-clock text-gold-500 mr-3"></i>
+                            <span>Segunda a Sexta: 09h às 18h</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Newsletter -->
+                <div>
+                    <h4 class="font-serif text-sm tracking-widest uppercase text-brand-200 mb-4 border-b border-brand-800 pb-2">Exclusividades</h4>
+                    <p class="text-brand-300 text-xs mb-3">Receba convites para leilões privativos e lançamentos de gemas lapidadas.</p>
+                    <form onsubmit="handleNewsletter(event)" class="flex flex-col space-y-2">
+                        <input type="email" required placeholder="Seu e-mail principal" class="bg-brand-800 text-white text-xs px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-gold-500 border border-brand-700">
+                        <button type="submit" class="bg-gold-500 text-brand-900 hover:bg-white text-xs font-semibold uppercase tracking-widest py-2.5 transition-colors">
+                            Cadastrar
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+
+            <!-- Bottom Line -->
+            <div class="border-t border-brand-800 pt-8 flex flex-col md:flex-row justify-between items-center text-[11px] text-brand-400 space-y-4 md:space-y-0">
+                <p>&copy; 2026 Dimitra Jóias. Todos os direitos reservados.</p>
+                <div class="flex space-x-6">
+                    <a href="#" class="hover:text-white transition-colors">Termos de Uso</a>
+                    <a href="#" class="hover:text-white transition-colors">Política de Privacidade</a>
+                    <a href="#" class="hover:text-white transition-colors">Garantia das Gemas</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Shopping Cart Slide-over Drawer -->
+    <div id="cart-drawer" class="fixed inset-0 z-50 pointer-events-none" aria-hidden="true">
+        <!-- Backdrop -->
+        <div id="cart-overlay" onclick="toggleCartDrawer()" class="drawer-overlay absolute inset-0 bg-black/60 opacity-0 transition-opacity"></div>
+        
+        <!-- Panel -->
+        <div id="cart-panel" class="drawer-panel absolute top-0 right-0 max-w-md w-full bg-white h-full shadow-2xl flex flex-col translate-x-full pointer-events-auto">
+            
+            <div class="bg-brand-900 text-white p-6 flex justify-between items-center">
+                <div>
+                    <h3 class="font-serif text-lg font-medium">Seu Carrinho</h3>
+                    <p class="text-brand-300 text-xs">Itens selecionados na Dimitra Jóias</p>
+                </div>
+                <button onclick="toggleCartDrawer()" class="text-brand-300 hover:text-white text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Items List -->
+            <div id="cart-items" class="flex-grow overflow-y-auto p-6 space-y-4">
+                <p id="empty-cart-msg" class="text-center text-gray-400 text-sm py-12">Seu carrinho está vazio no momento.</p>
+            </div>
+
+            <!-- Cart Footer Total -->
+            <div class="p-6 bg-brand-50 border-t border-brand-200">
+                <div class="flex justify-between items-center mb-4 text-brand-900">
+                    <span class="uppercase tracking-wider text-xs font-semibold">Total Estimado</span>
+                    <span id="cart-total" class="font-serif text-xl font-bold">R$ 0,00</span>
+                </div>
+                <button onclick="checkoutCart()" class="w-full bg-brand-900 text-white hover:bg-brand-500 py-3 text-xs uppercase tracking-widest font-semibold transition-colors shadow-md">
+                    Finalizar Atendimento
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="contact-modal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <!-- Modal Backdrop -->
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-xs" onclick="closeModal()"></div>
+        
+        <!-- Modal Panel -->
+        <div class="relative bg-white max-w-lg w-full mx-4 shadow-2xl z-10 border border-brand-200 overflow-hidden">
+            <div class="bg-brand-900 text-white p-6 text-center relative">
+                <button onclick="closeModal()" class="absolute top-4 right-4 text-brand-300 hover:text-white">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+                <h3 class="font-serif text-2xl mb-1">Fale Conosco</h3>
+                <p class="text-brand-300 text-xs font-light">Ateliê Dimitra Jóias - Vila Formosa</p>
+            </div>
+            
+            <form id="contact-form" onsubmit="handleContactSubmit(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-gray-600 mb-1 font-semibold">Nome Completo</label>
+                    <input type="text" required class="w-full border-b border-gray-300 py-2 text-sm focus:outline-none focus:border-brand-500 bg-transparent">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-gray-600 mb-1 font-semibold">E-mail</label>
+                    <input type="email" required class="w-full border-b border-gray-300 py-2 text-sm focus:outline-none focus:border-brand-500 bg-transparent">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-gray-600 mb-1 font-semibold">Assunto</label>
+                    <select class="w-full border-b border-gray-300 py-2 text-sm focus:outline-none focus:border-brand-500 bg-transparent text-gray-700">
+                        <option>Dúvida sobre produto</option>
+                        <option>Lapidação personalizada de pedra</option>
+                        <option>Agendamento no Ateliê (Vila Formosa)</option>
+                        <option>Outros assuntos</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-gray-600 mb-1 font-semibold">Mensagem</label>
+                    <textarea rows="3" required placeholder="Escreva sua solicitação ou dúvida..." class="w-full border-b border-gray-300 py-2 text-sm focus:outline-none focus:border-brand-500 bg-transparent resize-none"></textarea>
+                </div>
+                
+                <div class="pt-2">
+                    <button type="submit" class="w-full bg-brand-900 text-white hover:bg-brand-800 py-3 uppercase text-xs tracking-widest font-semibold transition-colors">
+                        Enviar Mensagem
+                    </button>
+                </div>
+                
+                <div class="text-center pt-2 text-xs text-gray-500 border-t border-gray-100">
+                    <p><i class="fas fa-map-marker-alt text-brand-500 mr-1"></i> Rua Pretória, 512, Vila Formosa - CEP: 03416-000</p>
+                    <p class="mt-1"><i class="fas fa-envelope text-brand-500 mr-1"></i> joiasdimitra@gmail.com</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast Box -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 bg-brand-900 text-white px-6 py-4 shadow-2xl transition-all duration-300 flex items-center space-x-3 border-l-4 border-gold-500">
+        <i id="toast-icon" class="fas fa-check-circle text-gold-500 text-lg"></i>
+        <span id="toast-message" class="text-xs sm:text-sm tracking-wide font-medium">Item adicionado com sucesso!</span>
+    </div>
+
+    <!-- Application Logic Script -->
+    <script>
+        // Shopping Cart State
+        let cart = [];
+
+        // Tab Switching Logic
+        function openTab(evt, tabName) {
+            const contents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < contents.length; i++) {
+                contents[i].classList.remove("active");
+            }
+
+            const buttons = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove("active");
+            }
+
+            document.getElementById(tabName).classList.add("active");
+            if (evt) {
+                evt.currentTarget.classList.add("active");
+            }
+        }
+
+        function openTabByName(tabName) {
+            const buttons = document.getElementsByClassName("tab-btn");
+            for (let btn of buttons) {
+                if (btn.getAttribute('onclick').includes(tabName)) {
+                    btn.click();
+                    break;
+                }
+            }
+        }
+
+        // Search Bar Toggle & Filter
+        function toggleSearch() {
+            const bar = document.getElementById('search-bar');
+            bar.classList.toggle('hidden');
+            if (!bar.classList.contains('hidden')) {
+                document.getElementById('search-input').focus();
+            }
+        }
+
+        function filterProducts() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.product-card');
+
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name') || '';
+                if (name.toLowerCase().includes(query)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Cart Drawer Control
+        function toggleCartDrawer() {
+            const drawer = document.getElementById('cart-drawer');
+            const overlay = document.getElementById('cart-overlay');
+            const panel = document.getElementById('cart-panel');
+
+            if (drawer.getAttribute('aria-hidden') === 'true') {
+                drawer.setAttribute('aria-hidden', 'false');
+                drawer.classList.remove('pointer-events-none');
+                setTimeout(() => {
+                    overlay.classList.remove('opacity-0');
+                    panel.classList.remove('translate-x-full');
+                }, 10);
+            } else {
+                overlay.classList.add('opacity-0');
+                panel.classList.add('translate-x-full');
+                setTimeout(() => {
+                    drawer.setAttribute('aria-hidden', 'true');
+                    drawer.classList.add('pointer-events-none');
+                }, 300);
+            }
+        }
+
+        // Add to Cart Logic
+        function addToCart(title, price, image) {
+            const existing = cart.find(item => item.title === title);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ title, price, image, quantity: 1 });
+            }
+            updateCartUI();
+            showToast(`"${title}" foi adicionado ao carrinho!`);
+        }
+
+        function removeFromCart(title) {
+            cart = cart.filter(item => item.title !== title);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartBadge = document.getElementById('cart-badge');
+            const cartTotal = document.getElementById('cart-total');
+
+            const totalCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+            const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+            cartBadge.textContent = totalCount;
+            cartTotal.textContent = `R$ ${totalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p id="empty-cart-msg" class="text-center text-gray-400 text-sm py-12">Seu carrinho está vazio no momento.</p>';
+                return;
+            }
+
+            cartItemsContainer.innerHTML = '';
+            cart.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'flex items-center justify-between border-b border-gray-100 pb-3';
+                itemEl.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <img src="${item.image}" alt="${item.title}" class="w-12 h-12 object-cover border border-brand-200">
+                        <div>
+                            <h4 class="font-serif text-xs font-semibold text-brand-900">${item.title}</h4>
+                            <p class="text-[11px] text-gray-500">${item.quantity}x R$ ${item.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                        </div>
+                    </div>
+                    <button onclick="removeFromCart('${item.title}')" class="text-gray-400 hover:text-red-600 text-xs p-1">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                `;
+                cartItemsContainer.appendChild(itemEl);
+            });
+        }
+
+        function checkoutCart() {
+            if (cart.length === 0) {
+                showToast('Adicione itens ao carrinho antes de finalizar!', true);
+                return;
+            }
+            toggleCartDrawer();
+            openModal();
+            showToast('Encaminhando pedido de atendimento exclusivo...');
+        }
+
+        // Contact Modal Control
+        const modal = document.getElementById('contact-modal');
+        function openModal() {
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        // Form Submission Handlers
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            closeModal();
+            showToast('Mensagem recebida com sucesso! Retornaremos em joiasdimitra@gmail.com.');
+            e.target.reset();
+        }
+
+        function handleNewsletter(e) {
+            e.preventDefault();
+            showToast('Inscrição confirmada na nossa lista exclusiva!');
+            e.target.reset();
+        }
+
+        // Toast Notification System
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastMsg.textContent = message;
+            if (isError) {
+                toastIcon.className = 'fas fa-exclamation-circle text-red-400 text-lg';
+            } else {
+                toastIcon.className = 'fas fa-check-circle text-gold-500 text-lg';
+            }
+
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3500);
+        }
+
+        // Close modal on Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                if (document.getElementById('cart-drawer').getAttribute('aria-hidden') === 'false') {
+                    toggleCartDrawer();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
+```
